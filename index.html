@@ -242,6 +242,24 @@
       padding: 0.35rem 1rem;
     }
 
+    .node.has-linkedin::after {
+      content: "in";
+      position: absolute;
+      top: 0.35rem;
+      right: 0.35rem;
+      width: 18px;
+      height: 18px;
+      background: #0077b5;
+      color: white;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+    }
+
     .node.is-active {
       transform: translate(-50%, -50%) scale(1.08) translateY(-6px);
       box-shadow: var(--shadow-lg);
@@ -289,12 +307,10 @@
       opacity: 0.3;
     }
 
-    /* Radar de pouvoir - très visible */
     .power-radar {
       opacity: 1;
     }
 
-    /* Tooltip amélioré */
     .custom-tooltip {
       position: absolute;
       padding: 0.75rem 1rem;
@@ -425,7 +441,6 @@
     .node[data-layer="1"] { animation-delay: 0.2s; }
     .node[data-layer="2"] { animation-delay: 0.3s; }
     .node[data-layer="3"] { animation-delay: 0.4s; }
-    .node[data-layer="4"] { animation-delay: 0.5s; }
 
     body.filter-politique .node:not(.node--politique) { opacity: 0.2; filter: grayscale(1); }
     body.filter-eco .node:not(.node--eco) { opacity: 0.2; filter: grayscale(1); }
@@ -472,8 +487,9 @@
         
         <div class="nodes-layer">
           <!-- Centre -->
-          <div class="node node--center node--politique" data-id="rolland" data-layer="0" data-angle="0"
-               data-title="Maire de Nantes & Présidente de Nantes Métropole">
+          <div class="node node--center node--politique has-linkedin" data-id="rolland" data-layer="0" data-angle="0"
+               data-title="Maire de Nantes & Présidente de Nantes Métropole"
+               data-linkedin="https://www.linkedin.com/in/johanna-rolland/">
             <span class="node-name">Johanna Rolland</span>
             <span class="node-badge">Politique</span>
           </div>
@@ -485,8 +501,9 @@
             <span class="node-badge">État</span>
           </div>
 
-          <div class="node node--politique" data-id="menard" data-layer="1" data-angle="50"
-               data-title="Président du conseil départemental">
+          <div class="node node--politique has-linkedin" data-id="menard" data-layer="1" data-angle="50"
+               data-title="Président du conseil départemental"
+               data-linkedin="https://www.linkedin.com/in/michel-ménard/">
             <span class="node-name">Michel Ménard</span>
             <span class="node-badge">Département</span>
           </div>
@@ -594,72 +611,12 @@
             <span class="node-name">Corinne Besnard</span>
             <span class="node-badge">Patronat</span>
           </div>
-
-          <!-- Couronne 4 - Influenceurs -->
-          <div class="node node--eco" data-id="lamoureux" data-layer="4" data-angle="15"
-               data-title="PDG La Boulangère">
-            <span class="node-name">J.-S. Lamoureux</span>
-            <span class="node-badge">Agroalimentaire</span>
-          </div>
-
-          <div class="node node--culture" data-id="deces" data-layer="4" data-angle="60"
-               data-title="Directeur général Stereolux">
-            <span class="node-name">Laurent Decès</span>
-            <span class="node-badge">Musiques actuelles</span>
-          </div>
-
-          <div class="node node--culture" data-id="kita" data-layer="4" data-angle="100"
-               data-title="Président FC Nantes">
-            <span class="node-name">Waldemar Kita</span>
-            <span class="node-badge">Sport</span>
-          </div>
-
-          <div class="node node--culture" data-id="daniel" data-layer="4" data-angle="135"
-               data-title="Directrice Trempolino">
-            <span class="node-name">Johanna Daniel</span>
-            <span class="node-badge">Musique</span>
-          </div>
-
-          <div class="node node--societal" data-id="grall" data-layer="4" data-angle="175"
-               data-title="Directeur ARS Pays de la Loire">
-            <span class="node-name">Jean-Yves Grall</span>
-            <span class="node-badge">Santé publique</span>
-          </div>
-
-          <div class="node node--eco" data-id="junique" data-layer="4" data-angle="215"
-               data-title="Président Nantes Métropole Aménagement">
-            <span class="node-name">Stéphane Junique</span>
-            <span class="node-badge">Aménagement</span>
-          </div>
-
-          <div class="node node--eco" data-id="levy_atlanpole" data-layer="4" data-angle="255"
-               data-title="Président Atlanpole">
-            <span class="node-name">Patrick Lévy</span>
-            <span class="node-badge">Innovation</span>
-          </div>
-
-          <div class="node node--culture" data-id="geffroy" data-layer="4" data-angle="295"
-               data-title="Directrice Ouest Médialab">
-            <span class="node-name">G. Geffroy</span>
-            <span class="node-badge">Médias</span>
-          </div>
-
-          <div class="node node--eco" data-id="poingt" data-layer="4" data-angle="330"
-               data-title="Présidente BNI Atlantique">
-            <span class="node-name">Anne-Lise Poingt</span>
-            <span class="node-badge">Réseau business</span>
-          </div>
-
-          <div class="node node--savoir" data-id="portier" data-layer="4" data-angle="5"
-               data-title="Directeur Cité des Congrès">
-            <span class="node-name">Franck Portier</span>
-            <span class="node-badge">Événementiel</span>
-          </div>
         </div>
       </div>
 
       <div class="instructions">
         <strong>💡 Guide :</strong> Survolez les noms pour voir les connexions et fonctions • 
+        Cliquez sur une bulle avec le logo <strong style="background: #0077b5; color: white; padding: 0 4px; border-radius: 2px;">in</strong> pour accéder au profil LinkedIn • 
         Le radar coloré indique l'intensité du pouvoir : 
         <span style="color: #dc2626; font-weight: bold;">●</span> forte au centre, 
         <span style="color: #f59e0b; font-weight: bold;">●</span> moyenne, 
@@ -673,8 +630,8 @@
   <script>
     const config = {
       maxRadius: 0.42,
-      layerCount: 4,
-      ringCount: 4,
+      layerCount: 3,
+      ringCount: 3,
       spokeCount: 8,
       collisionMargin: 8,
       collisionIterations: 5,
@@ -689,18 +646,7 @@
       ["denis", "trichard"], ["bernault", "tran"], ["bernault", "avrillier"],
       ["bernault", "guellerin"], ["tran", "avrillier"], ["tran", "levy"],
       ["levy", "madec"], ["levy", "guillet"], ["guillet", "madec"],
-      ["elsair", "rolland"], ["elsair", "menard"],
-      // Nouvelles connexions
-      ["lamoureux", "trichard"], ["lamoureux", "besnard"],
-      ["deces", "levy"], ["deces", "daniel"],
-      ["kita", "rolland"],
-      ["daniel", "deces"],
-      ["grall", "elsair"], ["grall", "menard"],
-      ["junique", "rolland"], ["junique", "pellegrino"], ["junique", "quero"],
-      ["levy_atlanpole", "bernault"], ["levy_atlanpole", "tran"], ["levy_atlanpole", "avrillier"],
-      ["geffroy", "levy"], ["geffroy", "madec"],
-      ["poingt", "besnard"], ["poingt", "trichard"],
-      ["portier", "joubert"], ["portier", "levy"]
+      ["elsair", "rolland"], ["elsair", "menard"]
     ];
 
     const state = {
@@ -805,7 +751,6 @@
       svg.setAttribute('width', width);
       svg.setAttribute('height', height);
 
-      // Dégradés pour le radar
       const defs = createSVGElement('defs', {});
       
       const gradHigh = createSVGElement('radialGradient', { id: 'powerHigh' });
@@ -834,10 +779,8 @@
       defs.appendChild(gradLow);
       svg.appendChild(defs);
 
-      // Radar de pouvoir
       const radar = createSVGElement('g', { class: 'power-radar' });
       
-      // Zone large (bleue) en arrière-plan
       radar.appendChild(createSVGElement('circle', {
         cx: centerX, cy: centerY, r: maxRadius,
         fill: 'url(#powerLow)'
@@ -847,7 +790,6 @@
         fill: 'none', stroke: '#3b82f6', 'stroke-width': '2', opacity: '0.3'
       }));
       
-      // Zone moyenne (orange)
       radar.appendChild(createSVGElement('circle', {
         cx: centerX, cy: centerY, r: layerStep * 1.8,
         fill: 'url(#powerMed)'
@@ -857,7 +799,6 @@
         fill: 'none', stroke: '#f59e0b', 'stroke-width': '2', opacity: '0.4'
       }));
       
-      // Zone centrale (rouge) au premier plan
       radar.appendChild(createSVGElement('circle', {
         cx: centerX, cy: centerY, r: layerStep * 0.8,
         fill: 'url(#powerHigh)'
@@ -869,7 +810,6 @@
       
       svg.appendChild(radar);
 
-      // Grille
       for (let i = 1; i <= config.ringCount; i++) {
         svg.appendChild(createSVGElement('circle', {
           cx: centerX, cy: centerY, r: i * layerStep,
@@ -887,7 +827,6 @@
         }));
       }
 
-      // Connexions
       connections.forEach(([fromId, toId]) => {
         const posFrom = state.positions.get(fromId);
         const posTo = state.positions.get(toId);
@@ -915,6 +854,7 @@
         node.addEventListener('mouseenter', (e) => handleNodeHover(node, e));
         node.addEventListener('mouseleave', handleNodeLeave);
         node.addEventListener('mousemove', (e) => updateTooltipPosition(e));
+        node.addEventListener('click', (e) => handleNodeClick(node, e));
       });
 
       legendItems.forEach(item => {
@@ -923,6 +863,14 @@
           toggleCategoryFilter(filter);
         });
       });
+    }
+
+    function handleNodeClick(node, event) {
+      const linkedin = node.dataset.linkedin;
+      if (linkedin) {
+        event.stopPropagation();
+        window.open(linkedin, '_blank');
+      }
     }
 
     function handleNodeHover(node, event) {
@@ -1000,8 +948,14 @@
     function showTooltip(node, event) {
       const title = node.dataset.title;
       const name = node.querySelector('.node-name').textContent;
+      const linkedin = node.dataset.linkedin;
       
-      tooltip.innerHTML = `<strong>${name}</strong><br>${title}`;
+      let content = `<strong>${name}</strong><br>${title}`;
+      if (linkedin) {
+        content += '<br><small style="color: #90cdf4;">🔗 Cliquez pour voir le profil LinkedIn</small>';
+      }
+      
+      tooltip.innerHTML = content;
       tooltip.classList.add('visible');
       updateTooltipPosition(event);
     }
@@ -1018,53 +972,42 @@
         const w = tooltipRect.width;
         const h = tooltipRect.height;
         
-        const padding = 5; // Très proche de la souris
+        const padding = 5;
         const arrow = 6;
         
-        // Reset classes
         tooltip.className = 'custom-tooltip visible';
         
-        let x, y;
+        let canvasX, canvasY;
         
-        // Calcul espace disponible
         const spaceTop = mouseY;
         const spaceBottom = canvasRect.height - mouseY;
         const spaceLeft = mouseX;
         const spaceRight = canvasRect.width - mouseX;
         
-        // Position relative au canvas
-        let canvasX, canvasY;
-        
-        // Position verticale
         if (spaceTop > h + padding + arrow) {
-          // Au-dessus
           canvasY = mouseY - h - arrow - padding;
           canvasX = Math.max(w/2 + 5, Math.min(mouseX, canvasRect.width - w/2 - 5));
           tooltip.classList.add('arrow-down');
           tooltip.style.transform = 'translateX(-50%)';
         } else if (spaceBottom > h + padding + arrow) {
-          // En-dessous
           canvasY = mouseY + arrow + padding;
           canvasX = Math.max(w/2 + 5, Math.min(mouseX, canvasRect.width - w/2 - 5));
           tooltip.classList.add('arrow-up');
           tooltip.style.transform = 'translateX(-50%)';
         } else if (spaceRight > w + padding + arrow) {
-          // À droite
           canvasX = mouseX + arrow + padding;
           canvasY = Math.max(h/2 + 5, Math.min(mouseY, canvasRect.height - h/2 - 5));
           tooltip.classList.add('arrow-left');
           tooltip.style.transform = 'translateY(-50%)';
         } else {
-          // À gauche
           canvasX = mouseX - w - arrow - padding;
           canvasY = Math.max(h/2 + 5, Math.min(mouseY, canvasRect.height - h/2 - 5));
           tooltip.classList.add('arrow-right');
           tooltip.style.transform = 'translateY(-50%)';
         }
         
-        // Convertir en coordonnées absolutes de la page (avec scroll)
-        x = canvasRect.left + window.scrollX + canvasX;
-        y = canvasRect.top + window.scrollY + canvasY;
+        const x = canvasRect.left + window.scrollX + canvasX;
+        const y = canvasRect.top + window.scrollY + canvasY;
         
         tooltip.style.left = `${x}px`;
         tooltip.style.top = `${y}px`;
