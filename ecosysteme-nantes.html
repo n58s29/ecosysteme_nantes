@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Écosystème des décideurs et influenceurs – Nantes</title>
+  <style>
+    :root {
+      --bg-gradient-start: #f8fafc;
+      --bg-gradient-end: #e8f0f7;
+      --panel: #ffffff;
+      --panel-glass: rgba(255, 255, 255, 0.85);
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.1);
+      --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.15);
+      
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+
+      --theme-politique: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+      --theme-politique-solid: #dc2626;
+      --theme-eco: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      --theme-eco-solid: #2563eb;
+      --theme-savoir: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+      --theme-savoir-solid: #16a34a;
+      --theme-culture: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+      --theme-culture-solid: #ea580c;
+      --theme-societal: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+      --theme-societal-solid: #7c3aed;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1.5rem;
+      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .container {
+      width: min(100%, 1200px);
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.5rem;
+      padding: 1rem 1.5rem;
+      border-radius: 16px;
+      background: var(--panel-glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      font-size: 0.875rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .legend:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      padding: 0.25rem 0.5rem;
+      border-radius: 8px;
+      transition: background-color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .legend-item:hover {
+      background-color: rgba(148, 163, 184, 0.1);
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+      flex-shrink: 0;
+    }
+
+    .legend-dot.politique  { background: var(--theme-politique-solid); }
+    .legend-dot.eco        { background: var(--theme-eco-solid); }
+    .legend-dot.savoir     { background: var(--theme-savoir-solid); }
+    .legend-dot.culture    { background: var(--theme-culture-solid); }
+    .legend-dot.societal   { background: var(--theme-societal-solid); }
+
+    .network-card {
+      background: var(--panel);
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      padding: 1.5rem;
+      overflow: hidden;
+    }
+
+    .network-canvas {
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      aspect-ratio: 4 / 3;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+      overflow: hidden;
+    }
+
+    #network-svg {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .nodes-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .node {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      min-width: 120px;
+      max-width: 160px;
+      padding: 0.75rem 1rem;
+      border-radius: 16px;
+      background: var(--panel);
+      border: 2px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      user-select: none;
+      
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      text-align: center;
+      
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .node:hover {
+      transform: translate(-50%, -50%) scale(1.05) translateY(-4px);
+      box-shadow: var(--shadow-md);
+      z-index: 10;
+    }
+
+    .node-name {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .node-badge {
+      align-self: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .node--politique { border-color: var(--theme-politique-solid); }
+    .node--eco       { border-color: var(--theme-eco-solid); }
+    .node--savoir    { border-color: var(--theme-savoir-solid); }
+    .node--culture   { border-color: var(--theme-culture-solid); }
+    .node--societal  { border-color: var(--theme-societal-solid); }
+
+    .node--politique .node-badge { background: var(--theme-politique); }
+    .node--eco       .node-badge { background: var(--theme-eco); }
+    .node--savoir    .node-badge { background: var(--theme-savoir); }
+    .node--culture   .node-badge { background: var(--theme-culture); }
+    .node--societal  .node-badge { background: var(--theme-societal); }
+
+    .node--center {
+      min-width: 180px;
+      max-width: 200px;
+      padding: 1.25rem 1.5rem;
+      border-width: 3px;
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .node--center .node-name {
+      font-size: 1.125rem;
+      font-weight: 700;
+    }
+
+    .node--center .node-badge {
+      font-size: 0.7rem;
+      padding: 0.35rem 1rem;
+    }
+
+    .node.is-active {
+      transform: translate(-50%, -50%) scale(1.08) translateY(-6px);
+      box-shadow: var(--shadow-lg);
+      border-width: 3px;
+      z-index: 100;
+    }
+
+    .node.is-connected {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.02);
+    }
+
+    .node.is-dimmed {
+      opacity: 0.3;
+      filter: grayscale(0.5);
+    }
+
+    .link {
+      stroke: #cbd5e1;
+      stroke-width: 1.5;
+      opacity: 0.4;
+      transition: all 0.3s ease;
+    }
+
+    .link.is-active {
+      stroke: var(--text-secondary);
+      stroke-width: 2.5;
+      opacity: 1;
+    }
+
+    .link.is-dimmed {
+      opacity: 0.1;
+    }
+
+    .grid-ring {
+      fill: none;
+      stroke: #e2e8f0;
+      stroke-width: 1;
+      opacity: 0.6;
+    }
+
+    .grid-spoke {
+      stroke: #e2e8f0;
+      stroke-width: 1;
+      opacity: 0.3;
+    }
+
+    /* Radar de pouvoir - très visible */
+    .power-radar {
+      opacity: 1;
+    }
+
+    /* Tooltip amélioré */
+    .custom-tooltip {
+      position: absolute;
+      padding: 0.75rem 1rem;
+      background: rgba(15, 23, 42, 0.95);
+      color: white;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 1000;
+      max-width: 280px;
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(8px);
+      transition: opacity 0.2s ease;
+      white-space: normal;
+    }
+
+    .custom-tooltip.visible {
+      opacity: 1;
+    }
+
+    .custom-tooltip::after {
+      content: '';
+      position: absolute;
+      border: 6px solid transparent;
+    }
+
+    .custom-tooltip.arrow-down::after {
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-top-color: rgba(15, 23, 42, 0.95);
+    }
+
+    .custom-tooltip.arrow-up::after {
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-bottom-color: rgba(15, 23, 42, 0.95);
+    }
+
+    .custom-tooltip.arrow-left::after {
+      left: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-right-color: rgba(15, 23, 42, 0.95);
+    }
+
+    .custom-tooltip.arrow-right::after {
+      right: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left-color: rgba(15, 23, 42, 0.95);
+    }
+
+    .instructions {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: var(--panel-glass);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .instructions strong {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      .legend {
+        gap: 0.5rem 1rem;
+        padding: 0.75rem 1rem;
+        font-size: 0.8rem;
+      }
+
+      .node {
+        min-width: 100px;
+        max-width: 130px;
+        padding: 0.6rem 0.75rem;
+      }
+
+      .node-name {
+        font-size: 0.8rem;
+      }
+
+      .node-badge {
+        font-size: 0.6rem;
+        padding: 0.2rem 0.6rem;
+      }
+
+      .node--center {
+        min-width: 140px;
+        max-width: 160px;
+        padding: 1rem;
+      }
+
+      .node--center .node-name {
+        font-size: 1rem;
+      }
+    }
+
+    @keyframes nodeAppear {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    .node {
+      animation: nodeAppear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+    }
+
+    .node[data-layer="0"] { animation-delay: 0.1s; }
+    .node[data-layer="1"] { animation-delay: 0.2s; }
+    .node[data-layer="2"] { animation-delay: 0.3s; }
+    .node[data-layer="3"] { animation-delay: 0.4s; }
+    .node[data-layer="4"] { animation-delay: 0.5s; }
+
+    body.filter-politique .node:not(.node--politique) { opacity: 0.2; filter: grayscale(1); }
+    body.filter-eco .node:not(.node--eco) { opacity: 0.2; filter: grayscale(1); }
+    body.filter-savoir .node:not(.node--savoir) { opacity: 0.2; filter: grayscale(1); }
+    body.filter-culture .node:not(.node--culture) { opacity: 0.2; filter: grayscale(1); }
+    body.filter-societal .node:not(.node--societal) { opacity: 0.2; filter: grayscale(1); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Écosystème des décideurs et influenceurs – Nantes</h1>
+      <p class="subtitle">
+        Cartographie interactive des acteurs clés de la métropole nantaise
+      </p>
+    </header>
+
+    <nav class="legend" role="navigation">
+      <div class="legend-item" data-filter="politique">
+        <span class="legend-dot politique"></span>
+        <span>Politique & institutions</span>
+      </div>
+      <div class="legend-item" data-filter="eco">
+        <span class="legend-dot eco"></span>
+        <span>Économie & entreprises</span>
+      </div>
+      <div class="legend-item" data-filter="savoir">
+        <span class="legend-dot savoir"></span>
+        <span>Enseignement & recherche</span>
+      </div>
+      <div class="legend-item" data-filter="culture">
+        <span class="legend-dot culture"></span>
+        <span>Culture & tourisme</span>
+      </div>
+      <div class="legend-item" data-filter="societal">
+        <span class="legend-dot societal"></span>
+        <span>Santé, habitat & développement</span>
+      </div>
+    </nav>
+
+    <main class="network-card">
+      <div class="network-canvas" id="canvas">
+        <svg id="network-svg"></svg>
+        
+        <div class="nodes-layer">
+          <!-- Centre -->
+          <div class="node node--center node--politique" data-id="rolland" data-layer="0" data-angle="0"
+               data-title="Maire de Nantes & Présidente de Nantes Métropole">
+            <span class="node-name">Johanna Rolland</span>
+            <span class="node-badge">Politique</span>
+          </div>
+
+          <!-- Couronne 1 -->
+          <div class="node node--politique" data-id="rigouletRoze" data-layer="1" data-angle="0"
+               data-title="Préfet de la Loire-Atlantique & de la région">
+            <span class="node-name">F. Rigoulet-Roze</span>
+            <span class="node-badge">État</span>
+          </div>
+
+          <div class="node node--politique" data-id="menard" data-layer="1" data-angle="50"
+               data-title="Président du conseil départemental">
+            <span class="node-name">Michel Ménard</span>
+            <span class="node-badge">Département</span>
+          </div>
+
+          <div class="node node--politique" data-id="morancais" data-layer="1" data-angle="110"
+               data-title="Présidente de la région Pays de la Loire">
+            <span class="node-name">C. Morançais</span>
+            <span class="node-badge">Région</span>
+          </div>
+
+          <div class="node node--politique" data-id="trichard" data-layer="1" data-angle="170"
+               data-title="Président CCI Nantes St-Nazaire">
+            <span class="node-name">Yann Trichard</span>
+            <span class="node-badge">CCI</span>
+          </div>
+
+          <div class="node node--societal" data-id="elsair" data-layer="1" data-angle="230"
+               data-title="Directeur général du CHU de Nantes">
+            <span class="node-name">Philippe El Saïr</span>
+            <span class="node-badge">Santé</span>
+          </div>
+
+          <div class="node node--savoir" data-id="bernault" data-layer="1" data-angle="290"
+               data-title="Présidente de Nantes Université">
+            <span class="node-name">Carine Bernault</span>
+            <span class="node-badge">Université</span>
+          </div>
+
+          <div class="node node--savoir" data-id="tran" data-layer="1" data-angle="330"
+               data-title="Directeur général Audencia">
+            <span class="node-name">Sébastien Tran</span>
+            <span class="node-badge">Business school</span>
+          </div>
+
+          <!-- Couronne 2 -->
+          <div class="node node--eco" data-id="pellegrino" data-layer="2" data-angle="20"
+               data-title="Président CINA (Club immobilier Nantes Atlantique)">
+            <span class="node-name">G. Pellegrino</span>
+            <span class="node-badge">Immobilier</span>
+          </div>
+
+          <div class="node node--eco" data-id="joubert" data-layer="2" data-angle="80"
+               data-title="DG Nantes St-Nazaire Développement">
+            <span class="node-name">Fabrice Joubert</span>
+            <span class="node-badge">Attractivité</span>
+          </div>
+
+          <div class="node node--savoir" data-id="avrillier" data-layer="2" data-angle="140"
+               data-title="Directeur Centrale Nantes">
+            <span class="node-name">J.-B. Avrillier</span>
+            <span class="node-badge">Ingénierie</span>
+          </div>
+
+          <div class="node node--savoir" data-id="guellerin" data-layer="2" data-angle="200"
+               data-title="Directeur École de design Nantes Atlantique">
+            <span class="node-name">C. Guellerin</span>
+            <span class="node-badge">Design</span>
+          </div>
+
+          <div class="node node--culture" data-id="levy" data-layer="2" data-angle="260"
+               data-title="Directrice générale Le Voyage à Nantes">
+            <span class="node-name">Sophie Lévy</span>
+            <span class="node-badge">Tourisme</span>
+          </div>
+
+          <div class="node node--culture" data-id="madec" data-layer="2" data-angle="320"
+               data-title="Directrice Les Machines de l'île">
+            <span class="node-name">Hélène Madec</span>
+            <span class="node-badge">Attraction</span>
+          </div>
+
+          <!-- Couronne 3 -->
+          <div class="node node--eco" data-id="polignac" data-layer="3" data-angle="45"
+               data-title="DG Maisons du Monde">
+            <span class="node-name">F.-M. de Polignac</span>
+            <span class="node-badge">Retail</span>
+          </div>
+
+          <div class="node node--culture" data-id="guillet" data-layer="3" data-angle="105"
+               data-title="Directeur Château des ducs de Bretagne">
+            <span class="node-name">Bertrand Guillet</span>
+            <span class="node-badge">Patrimoine</span>
+          </div>
+
+          <div class="node node--savoir" data-id="brochard" data-layer="3" data-angle="165"
+               data-title="Présidente École de design Nantes Atlantique">
+            <span class="node-name">Anne Brochard</span>
+            <span class="node-badge">Gouvernance</span>
+          </div>
+
+          <div class="node node--eco" data-id="denis" data-layer="3" data-angle="225"
+               data-title="Président CA Audencia & DG Manitou">
+            <span class="node-name">Michel Denis</span>
+            <span class="node-badge">Industrie</span>
+          </div>
+
+          <div class="node node--societal" data-id="quero" data-layer="3" data-angle="285"
+               data-title="Président Nantes Métropole Habitat">
+            <span class="node-name">Thomas Quéro</span>
+            <span class="node-badge">Habitat social</span>
+          </div>
+
+          <div class="node node--eco" data-id="besnard" data-layer="3" data-angle="345"
+               data-title="Présidente Medef Loire-Atlantique">
+            <span class="node-name">Corinne Besnard</span>
+            <span class="node-badge">Patronat</span>
+          </div>
+
+          <!-- Couronne 4 - Influenceurs -->
+          <div class="node node--eco" data-id="lamoureux" data-layer="4" data-angle="15"
+               data-title="PDG La Boulangère">
+            <span class="node-name">J.-S. Lamoureux</span>
+            <span class="node-badge">Agroalimentaire</span>
+          </div>
+
+          <div class="node node--culture" data-id="deces" data-layer="4" data-angle="60"
+               data-title="Directeur général Stereolux">
+            <span class="node-name">Laurent Decès</span>
+            <span class="node-badge">Musiques actuelles</span>
+          </div>
+
+          <div class="node node--culture" data-id="kita" data-layer="4" data-angle="100"
+               data-title="Président FC Nantes">
+            <span class="node-name">Waldemar Kita</span>
+            <span class="node-badge">Sport</span>
+          </div>
+
+          <div class="node node--culture" data-id="daniel" data-layer="4" data-angle="135"
+               data-title="Directrice Trempolino">
+            <span class="node-name">Johanna Daniel</span>
+            <span class="node-badge">Musique</span>
+          </div>
+
+          <div class="node node--societal" data-id="grall" data-layer="4" data-angle="175"
+               data-title="Directeur ARS Pays de la Loire">
+            <span class="node-name">Jean-Yves Grall</span>
+            <span class="node-badge">Santé publique</span>
+          </div>
+
+          <div class="node node--eco" data-id="junique" data-layer="4" data-angle="215"
+               data-title="Président Nantes Métropole Aménagement">
+            <span class="node-name">Stéphane Junique</span>
+            <span class="node-badge">Aménagement</span>
+          </div>
+
+          <div class="node node--eco" data-id="levy_atlanpole" data-layer="4" data-angle="255"
+               data-title="Président Atlanpole">
+            <span class="node-name">Patrick Lévy</span>
+            <span class="node-badge">Innovation</span>
+          </div>
+
+          <div class="node node--culture" data-id="geffroy" data-layer="4" data-angle="295"
+               data-title="Directrice Ouest Médialab">
+            <span class="node-name">G. Geffroy</span>
+            <span class="node-badge">Médias</span>
+          </div>
+
+          <div class="node node--eco" data-id="poingt" data-layer="4" data-angle="330"
+               data-title="Présidente BNI Atlantique">
+            <span class="node-name">Anne-Lise Poingt</span>
+            <span class="node-badge">Réseau business</span>
+          </div>
+
+          <div class="node node--savoir" data-id="portier" data-layer="4" data-angle="5"
+               data-title="Directeur Cité des Congrès">
+            <span class="node-name">Franck Portier</span>
+            <span class="node-badge">Événementiel</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="instructions">
+        <strong>💡 Guide :</strong> Survolez les noms pour voir les connexions et fonctions • 
+        Le radar coloré indique l'intensité du pouvoir : 
+        <span style="color: #dc2626; font-weight: bold;">●</span> forte au centre, 
+        <span style="color: #f59e0b; font-weight: bold;">●</span> moyenne, 
+        <span style="color: #3b82f6; font-weight: bold;">●</span> diffuse en périphérie
+      </div>
+    </main>
+  </div>
+
+  <div class="custom-tooltip" id="tooltip"></div>
+
+  <script>
+    const config = {
+      maxRadius: 0.42,
+      layerCount: 4,
+      ringCount: 4,
+      spokeCount: 8,
+      collisionMargin: 8,
+      collisionIterations: 5,
+      collisionStep: 10
+    };
+
+    const connections = [
+      ["rolland", "rigouletRoze"], ["rolland", "menard"], ["rolland", "morancais"],
+      ["rolland", "trichard"], ["rolland", "elsair"], ["rolland", "bernault"],
+      ["rolland", "tran"], ["trichard", "besnard"], ["trichard", "joubert"],
+      ["trichard", "polignac"], ["pellegrino", "quero"], ["denis", "tran"],
+      ["denis", "trichard"], ["bernault", "tran"], ["bernault", "avrillier"],
+      ["bernault", "guellerin"], ["tran", "avrillier"], ["tran", "levy"],
+      ["levy", "madec"], ["levy", "guillet"], ["guillet", "madec"],
+      ["elsair", "rolland"], ["elsair", "menard"],
+      // Nouvelles connexions
+      ["lamoureux", "trichard"], ["lamoureux", "besnard"],
+      ["deces", "levy"], ["deces", "daniel"],
+      ["kita", "rolland"],
+      ["daniel", "deces"],
+      ["grall", "elsair"], ["grall", "menard"],
+      ["junique", "rolland"], ["junique", "pellegrino"], ["junique", "quero"],
+      ["levy_atlanpole", "bernault"], ["levy_atlanpole", "tran"], ["levy_atlanpole", "avrillier"],
+      ["geffroy", "levy"], ["geffroy", "madec"],
+      ["poingt", "besnard"], ["poingt", "trichard"],
+      ["portier", "joubert"], ["portier", "levy"]
+    ];
+
+    const state = {
+      nodes: [],
+      nodeMap: new Map(),
+      positions: new Map(),
+      activeNode: null,
+      currentFilter: null
+    };
+
+    const canvas = document.getElementById('canvas');
+    const svg = document.getElementById('network-svg');
+    const tooltip = document.getElementById('tooltip');
+    const legendItems = document.querySelectorAll('.legend-item');
+
+    function init() {
+      state.nodes = Array.from(document.querySelectorAll('.node'));
+      state.nodes.forEach(node => state.nodeMap.set(node.dataset.id, node));
+      
+      layout();
+      attachEventListeners();
+      
+      window.addEventListener('resize', debounce(layout, 150));
+    }
+
+    function layout() {
+      const rect = canvas.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const maxRadius = Math.min(width, height) * config.maxRadius;
+      const layerStep = maxRadius / config.layerCount;
+
+      state.nodes.forEach(node => {
+        const layer = parseInt(node.dataset.layer);
+        const angle = parseFloat(node.dataset.angle);
+        const angleRad = ((angle - 90) * Math.PI) / 180;
+        const radius = layer * layerStep;
+
+        const position = {
+          x: centerX + radius * Math.cos(angleRad),
+          y: centerY + radius * Math.sin(angleRad),
+          radius,
+          angleRad,
+          layer
+        };
+
+        state.positions.set(node.dataset.id, position);
+        updateNodePosition(node, position);
+      });
+
+      resolveCollisions(centerX, centerY, maxRadius);
+      renderSVG(width, height, centerX, centerY, maxRadius, layerStep);
+    }
+
+    function updateNodePosition(node, position) {
+      node.style.left = `${position.x}px`;
+      node.style.top = `${position.y}px`;
+    }
+
+    function resolveCollisions(centerX, centerY, maxRadius) {
+      for (let iter = 0; iter < config.collisionIterations; iter++) {
+        let hasCollision = false;
+
+        state.nodes.forEach((nodeA, i) => {
+          state.nodes.forEach((nodeB, j) => {
+            if (i >= j) return;
+
+            const posA = state.positions.get(nodeA.dataset.id);
+            const posB = state.positions.get(nodeB.dataset.id);
+
+            const dx = posA.x - posB.x;
+            const dy = posA.y - posB.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            const widthA = nodeA.offsetWidth;
+            const widthB = nodeB.offsetWidth;
+            const minDistance = Math.max(widthA, widthB) / 2 + config.collisionMargin;
+
+            if (distance < minDistance) {
+              const targetNode = posA.layer >= posB.layer ? nodeA : nodeB;
+              const targetPos = posA.layer >= posB.layer ? posA : posB;
+              
+              targetPos.radius = Math.min(targetPos.radius + config.collisionStep, maxRadius + 60);
+              targetPos.x = centerX + targetPos.radius * Math.cos(targetPos.angleRad);
+              targetPos.y = centerY + targetPos.radius * Math.sin(targetPos.angleRad);
+              
+              updateNodePosition(targetNode, targetPos);
+              hasCollision = true;
+            }
+          });
+        });
+
+        if (!hasCollision) break;
+      }
+    }
+
+    function renderSVG(width, height, centerX, centerY, maxRadius, layerStep) {
+      svg.innerHTML = '';
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svg.setAttribute('width', width);
+      svg.setAttribute('height', height);
+
+      // Dégradés pour le radar
+      const defs = createSVGElement('defs', {});
+      
+      const gradHigh = createSVGElement('radialGradient', { id: 'powerHigh' });
+      gradHigh.innerHTML = `
+        <stop offset="0%" style="stop-color:#b91c1c;stop-opacity:0.9" />
+        <stop offset="60%" style="stop-color:#dc2626;stop-opacity:0.5" />
+        <stop offset="100%" style="stop-color:#dc2626;stop-opacity:0.1" />
+      `;
+      
+      const gradMed = createSVGElement('radialGradient', { id: 'powerMed' });
+      gradMed.innerHTML = `
+        <stop offset="0%" style="stop-color:#d97706;stop-opacity:0.8" />
+        <stop offset="60%" style="stop-color:#f59e0b;stop-opacity:0.4" />
+        <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.05" />
+      `;
+      
+      const gradLow = createSVGElement('radialGradient', { id: 'powerLow' });
+      gradLow.innerHTML = `
+        <stop offset="0%" style="stop-color:#1d4ed8;stop-opacity:0.65" />
+        <stop offset="60%" style="stop-color:#3b82f6;stop-opacity:0.3" />
+        <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0" />
+      `;
+      
+      defs.appendChild(gradHigh);
+      defs.appendChild(gradMed);
+      defs.appendChild(gradLow);
+      svg.appendChild(defs);
+
+      // Radar de pouvoir
+      const radar = createSVGElement('g', { class: 'power-radar' });
+      
+      // Zone large (bleue) en arrière-plan
+      radar.appendChild(createSVGElement('circle', {
+        cx: centerX, cy: centerY, r: maxRadius,
+        fill: 'url(#powerLow)'
+      }));
+      radar.appendChild(createSVGElement('circle', {
+        cx: centerX, cy: centerY, r: maxRadius,
+        fill: 'none', stroke: '#3b82f6', 'stroke-width': '2', opacity: '0.3'
+      }));
+      
+      // Zone moyenne (orange)
+      radar.appendChild(createSVGElement('circle', {
+        cx: centerX, cy: centerY, r: layerStep * 1.8,
+        fill: 'url(#powerMed)'
+      }));
+      radar.appendChild(createSVGElement('circle', {
+        cx: centerX, cy: centerY, r: layerStep * 1.8,
+        fill: 'none', stroke: '#f59e0b', 'stroke-width': '2', opacity: '0.4'
+      }));
+      
+      // Zone centrale (rouge) au premier plan
+      radar.appendChild(createSVGElement('circle', {
+        cx: centerX, cy: centerY, r: layerStep * 0.8,
+        fill: 'url(#powerHigh)'
+      }));
+      radar.appendChild(createSVGElement('circle', {
+        cx: centerX, cy: centerY, r: layerStep * 0.8,
+        fill: 'none', stroke: '#dc2626', 'stroke-width': '2', opacity: '0.5'
+      }));
+      
+      svg.appendChild(radar);
+
+      // Grille
+      for (let i = 1; i <= config.ringCount; i++) {
+        svg.appendChild(createSVGElement('circle', {
+          cx: centerX, cy: centerY, r: i * layerStep,
+          class: 'grid-ring'
+        }));
+      }
+
+      for (let i = 0; i < config.spokeCount; i++) {
+        const angle = (i / config.spokeCount) * Math.PI * 2;
+        svg.appendChild(createSVGElement('line', {
+          x1: centerX, y1: centerY,
+          x2: centerX + maxRadius * Math.cos(angle),
+          y2: centerY + maxRadius * Math.sin(angle),
+          class: 'grid-spoke'
+        }));
+      }
+
+      // Connexions
+      connections.forEach(([fromId, toId]) => {
+        const posFrom = state.positions.get(fromId);
+        const posTo = state.positions.get(toId);
+        
+        if (posFrom && posTo) {
+          svg.appendChild(createSVGElement('line', {
+            x1: posFrom.x, y1: posFrom.y,
+            x2: posTo.x, y2: posTo.y,
+            class: 'link',
+            'data-from': fromId,
+            'data-to': toId
+          }));
+        }
+      });
+    }
+
+    function createSVGElement(tag, attrs) {
+      const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+      Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, value));
+      return el;
+    }
+
+    function attachEventListeners() {
+      state.nodes.forEach(node => {
+        node.addEventListener('mouseenter', (e) => handleNodeHover(node, e));
+        node.addEventListener('mouseleave', handleNodeLeave);
+        node.addEventListener('mousemove', (e) => updateTooltipPosition(e));
+      });
+
+      legendItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const filter = item.dataset.filter;
+          toggleCategoryFilter(filter);
+        });
+      });
+    }
+
+    function handleNodeHover(node, event) {
+      if (state.currentFilter) return;
+
+      state.activeNode = node.dataset.id;
+      highlightConnections(node.dataset.id);
+      showTooltip(node, event);
+    }
+
+    function handleNodeLeave() {
+      if (state.currentFilter) return;
+      
+      state.activeNode = null;
+      clearHighlight();
+      hideTooltip();
+    }
+
+    function highlightConnections(nodeId) {
+      const connectedIds = new Set();
+      
+      connections.forEach(([from, to]) => {
+        if (from === nodeId) connectedIds.add(to);
+        else if (to === nodeId) connectedIds.add(from);
+      });
+
+      state.nodes.forEach(node => {
+        const id = node.dataset.id;
+        node.classList.remove('is-active', 'is-connected', 'is-dimmed');
+        
+        if (id === nodeId) {
+          node.classList.add('is-active');
+        } else if (connectedIds.has(id)) {
+          node.classList.add('is-connected');
+        } else {
+          node.classList.add('is-dimmed');
+        }
+      });
+
+      svg.querySelectorAll('.link').forEach(link => {
+        const from = link.getAttribute('data-from');
+        const to = link.getAttribute('data-to');
+        
+        link.classList.remove('is-active', 'is-dimmed');
+        
+        if (from === nodeId || to === nodeId) {
+          link.classList.add('is-active');
+        } else {
+          link.classList.add('is-dimmed');
+        }
+      });
+    }
+
+    function clearHighlight() {
+      state.nodes.forEach(node => {
+        node.classList.remove('is-active', 'is-connected', 'is-dimmed');
+      });
+
+      svg.querySelectorAll('.link').forEach(link => {
+        link.classList.remove('is-active', 'is-dimmed');
+      });
+    }
+
+    function toggleCategoryFilter(category) {
+      if (state.currentFilter === category) {
+        state.currentFilter = null;
+        document.body.className = '';
+        clearHighlight();
+      } else {
+        state.currentFilter = category;
+        document.body.className = `filter-${category}`;
+      }
+    }
+
+    function showTooltip(node, event) {
+      const title = node.dataset.title;
+      const name = node.querySelector('.node-name').textContent;
+      
+      tooltip.innerHTML = `<strong>${name}</strong><br>${title}`;
+      tooltip.classList.add('visible');
+      updateTooltipPosition(event);
+    }
+
+    function updateTooltipPosition(event) {
+      if (!tooltip.classList.contains('visible')) return;
+
+      const canvasRect = canvas.getBoundingClientRect();
+      const mouseX = event.clientX - canvasRect.left;
+      const mouseY = event.clientY - canvasRect.top;
+      
+      requestAnimationFrame(() => {
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const w = tooltipRect.width;
+        const h = tooltipRect.height;
+        
+        const padding = 5; // Très proche de la souris
+        const arrow = 6;
+        
+        // Reset classes
+        tooltip.className = 'custom-tooltip visible';
+        
+        let x, y;
+        
+        // Calcul espace disponible
+        const spaceTop = mouseY;
+        const spaceBottom = canvasRect.height - mouseY;
+        const spaceLeft = mouseX;
+        const spaceRight = canvasRect.width - mouseX;
+        
+        // Position relative au canvas
+        let canvasX, canvasY;
+        
+        // Position verticale
+        if (spaceTop > h + padding + arrow) {
+          // Au-dessus
+          canvasY = mouseY - h - arrow - padding;
+          canvasX = Math.max(w/2 + 5, Math.min(mouseX, canvasRect.width - w/2 - 5));
+          tooltip.classList.add('arrow-down');
+          tooltip.style.transform = 'translateX(-50%)';
+        } else if (spaceBottom > h + padding + arrow) {
+          // En-dessous
+          canvasY = mouseY + arrow + padding;
+          canvasX = Math.max(w/2 + 5, Math.min(mouseX, canvasRect.width - w/2 - 5));
+          tooltip.classList.add('arrow-up');
+          tooltip.style.transform = 'translateX(-50%)';
+        } else if (spaceRight > w + padding + arrow) {
+          // À droite
+          canvasX = mouseX + arrow + padding;
+          canvasY = Math.max(h/2 + 5, Math.min(mouseY, canvasRect.height - h/2 - 5));
+          tooltip.classList.add('arrow-left');
+          tooltip.style.transform = 'translateY(-50%)';
+        } else {
+          // À gauche
+          canvasX = mouseX - w - arrow - padding;
+          canvasY = Math.max(h/2 + 5, Math.min(mouseY, canvasRect.height - h/2 - 5));
+          tooltip.classList.add('arrow-right');
+          tooltip.style.transform = 'translateY(-50%)';
+        }
+        
+        // Convertir en coordonnées absolutes de la page (avec scroll)
+        x = canvasRect.left + window.scrollX + canvasX;
+        y = canvasRect.top + window.scrollY + canvasY;
+        
+        tooltip.style.left = `${x}px`;
+        tooltip.style.top = `${y}px`;
+      });
+    }
+
+    function hideTooltip() {
+      tooltip.classList.remove('visible');
+    }
+
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+      };
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
